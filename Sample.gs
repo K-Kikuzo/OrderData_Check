@@ -1,4 +1,4 @@
-function extractAndProcessData() {
+function OrderCHECK() {
   // スプレッドシートの取得
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
