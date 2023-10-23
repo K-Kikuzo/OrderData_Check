@@ -3,11 +3,11 @@ function OrderCHECK() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
   // 注文データが入っているシート名
-  var sheetName = "リスト(raw)";
+  var sheetName = "リスト(raw)";  // 既存リストも変える必要あり
   var dataSheet = spreadsheet.getSheetByName(sheetName);
   
   // 受注データの抽出結果を貼り付けるシート名
-  var resultSheetName = "顧客別注文データ";
+  var resultSheetName = "顧客別注文データ";  // 新しく作成する必要あり
   var resultSheet = spreadsheet.getSheetByName(resultSheetName);
   
   // データ範囲と値を取得
