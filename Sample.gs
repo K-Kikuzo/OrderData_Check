@@ -1,10 +1,3 @@
-//------------------------------------------------------------------------------------------------
-// 構成
-// 　├ リスト(raw) … 注文データが入ってくるシート
-//　 └ 顧客別注文データ … 受注精査後のデータを格納するシート（店舗展開用？改変元？）
-//      └ Sample.gs … 顧客別注文データで作動させるGas
-//------------------------------------------------------------------------------------------------
-
 function OrderCHECK() {
   // スプレッドシートの取得
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -30,7 +23,23 @@ function OrderCHECK() {
     var cancelStatus = "ｷｬﾝｾﾙ済み（予約可能枠）です";  // キャンセルステータス文言
 
     if (status == "受取待ちです") {
-      result.push(data[i]);
+      // 2023/10/28：同じデータがある場合は個数を加算する処理追加
+      var existingIndex = result.findIndex(function(row) {
+        return (
+          row[2] == data[i][2] && // 名前
+          row[3] == data[i][3] && // 受取日
+          row[4] == data[i][4] && // 受取時間
+          row[6] == data[i][6]    // 電話番号
+        );
+      });
+
+      if (existingIndex !== -1) {
+        for (var k = 11; k < data[i].length; k++) {
+          result[existingIndex][k] += data[i][k];
+        }
+      } else {
+        result.push(data[i]);
+      }
     } else if (status == cancelStatus) {
       // キャンセルの場合、対応する「受取待ちです」の行を検索し、計算を行う（キーは名前・受取日・受取時間・電話番号の4つとする）
       for (var j = i - 1; j >= 0; j--) {
