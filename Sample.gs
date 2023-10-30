@@ -67,7 +67,7 @@ function OrderCHECK() {
   // 結果を結果シートに貼り付け
   resultSheet.getRange(2, 1, result.length, result[0].length).setValues(result);
 
-  // SUM関数を追加する処理
+  // 関数を追加する処理
   var lastRowWithData = resultSheet.getLastRow();
 
   // データがない場合は処理しない
@@ -78,7 +78,6 @@ function OrderCHECK() {
 
       var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($M' + row + ':$DH' + row + '>0, VLOOKUP($M$1:$DH$1, \'仮商品マスタ\'!A:B, 2, FALSE) & " x " & $M' + row + ':$DH' + row + ' & "個", "")))';
       resultSheet.getRange(row, 11).setFormula(indexMatchFormula);
-
     }
   }
 }
