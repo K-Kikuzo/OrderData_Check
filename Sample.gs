@@ -29,6 +29,7 @@ function OrderCHECK() {
           row[2] == data[i][2] && // 名前
           row[3] == data[i][3] && // 受取日
           row[4] == data[i][4] && // 受取時間
+          row[5] == data[i][5] && // 店舗
           row[6] == data[i][6]    // 電話番号
         );
       });
@@ -41,12 +42,13 @@ function OrderCHECK() {
         result.push(data[i]);
       }
     } else if (status == cancelStatus) {
-      // キャンセルの場合、対応する「受取待ちです」の行を検索し、計算を行う（キーは名前・受取日・受取時間・電話番号の4つとする）
+      // キャンセルの場合、対応する「受取待ちです」の行を検索し、計算を行う（キーは名前・受取日・受取時間・電話番号・店舗の5つとする）
       for (var j = i - 1; j >= 0; j--) {
         if (
           data[j][2] == data[i][2] && // 名前
           data[j][3] == data[i][3] && // 受取日
           data[j][4] == data[i][4] && // 受取時間
+          data[j][5] == data[i][5] && // 店舗
           data[j][6] == data[i][6]    // 電話番号
         ) {
           // 受注数とキャンセル個数の計算を行う
@@ -76,6 +78,7 @@ function OrderCHECK() {
       var sumFormula = "=SUM(M" + row + ":AQ" + row + ")";
       resultSheet.getRange(row, 12).setFormula(sumFormula);
 
+      // 商品名参照関数
       var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($M' + row + ':$DH' + row + '>0, VLOOKUP($M$1:$DH$1, \'仮商品マスタ\'!A:B, 2, FALSE) & " x " & $M' + row + ':$DH' + row + ' & "個", "")))';
       resultSheet.getRange(row, 11).setFormula(indexMatchFormula);
     }
