@@ -75,12 +75,12 @@ function OrderCHECK() {
   // データがない場合は処理しない
   if (lastRowWithData > 1) {
     for (var row = 2; row <= lastRowWithData; row++) {
-      var sumFormula = "=SUM(M" + row + ":AQ" + row + ")";
-      resultSheet.getRange(row, 12).setFormula(sumFormula);
+      var sumFormula = "=SUM(L" + row + ":AQ" + row + ")";
+      resultSheet.getRange(row, 11).setFormula(sumFormula);
 
       // 商品名参照関数
-      var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($M' + row + ':$DH' + row + '>0, VLOOKUP($M$1:$DH$1, \'仮商品マスタ\'!A:B, 2, FALSE) & " x " & $M' + row + ':$DH' + row + ' & "個", "")))';
-      resultSheet.getRange(row, 11).setFormula(indexMatchFormula);
+      var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($L' + row + ':$DH' + row + '>0, VLOOKUP($M$1:$DH$1, \'仮商品マスタ\'!A:B, 2, FALSE) & " x " & $L' + row + ':$DH' + row + ' & "個", "")))';
+      resultSheet.getRange(row, 9).setFormula(indexMatchFormula);
     }
   }
 }
