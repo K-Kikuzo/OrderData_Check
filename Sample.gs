@@ -36,27 +36,30 @@ function OrderCHECK() {
 
       if (existingIndex !== -1) {
         for (var k = 11; k < data[i].length; k++) {
-          result[existingIndex][k] += data[i][k];
+          result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
         }
       } else {
         result.push(data[i]);
       }
-    } else if (status == cancelStatus) {
-      // キャンセルの場合、対応する「受取待ちです」の行を検索し、計算を行う（キーは名前・受取日・受取時間・電話番号・店舗の5つとする）
-      for (var j = i - 1; j >= 0; j--) {
-        if (
-          data[j][2] == data[i][2] && // 名前
-          data[j][3] == data[i][3] && // 受取日
-          data[j][4] == data[i][4] && // 受取時間
-          data[j][5] == data[i][5] && // 店舗
-          data[j][6] == data[i][6]    // 電話番号
-        ) {
-          // 受注数とキャンセル個数の計算を行う
-          for (var k = 11; k < data[j].length; k++) {
-            data[j][k] += data[i][k];
-          }
-          break;
+    }
+    
+    if (status == cancelStatus) {
+      var existingIndex = result.findIndex(function(row) {
+        return (
+          row[2] == data[i][2] && // 名前
+          row[3] == data[i][3] && // 受取日
+          row[4] == data[i][4] && // 受取時間
+          row[5] == data[i][5] && // 店舗
+          row[6] == data[i][6]    // 電話番号
+        );
+      });
+
+      if (existingIndex !== -1) {
+        for (var k = 11; k < data[i].length; k++) {
+          result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
         }
+      } else {
+        result.push(data[i]);
       }
     }
   }
@@ -75,11 +78,11 @@ function OrderCHECK() {
   // データがない場合は処理しない
   if (lastRowWithData > 1) {
     for (var row = 2; row <= lastRowWithData; row++) {
-      var sumFormula = "=SUM(L" + row + ":AQ" + row + ")";
-      resultSheet.getRange(row, 11).setFormula(sumFormula);
+      var sumFormula = "=SUM(M" + row + ":DJ" + row + ")";
+      resultSheet.getRange(row, 12).setFormula(sumFormula);
 
       // 商品名参照関数
-      var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($L' + row + ':$DH' + row + '>0, VLOOKUP($M$1:$DH$1, \'仮商品マスタ\'!A:B, 2, FALSE) & " x " & $L' + row + ':$DH' + row + ' & "個", "")))';
+      var indexMatchFormula = '=ARRAYFORMULA(TEXTJOIN(CHAR(10), TRUE, IF($M' + row + ':$DJ' + row + '>0, VLOOKUP($M$1:$DJ$1, \'商品マスタ\'!A:B, 1, FALSE) & " " & VLOOKUP($M$1:$DJ$1, \'商品マスタ\'!A:B, 2, FALSE) & " x " & $M' + row + ':$DJ' + row + ' & "個", "")))';
       resultSheet.getRange(row, 9).setFormula(indexMatchFormula);
     }
   }
