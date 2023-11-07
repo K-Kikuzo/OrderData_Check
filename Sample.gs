@@ -26,7 +26,7 @@ function OrderCHECK() {
       // 2023/10/28：同じデータがある場合は個数を加算する処理追加
       var existingIndex = result.findIndex(function(row) {
         return (
-          row[2] == data[i][2] && // 名前
+          row[2].replace(/\s/g, "") == data[i][2].replace(/\s/g, "") && // 名前（スペースを削除）
           row[3] == data[i][3] && // 受取日
           row[4] == data[i][4] && // 受取時間
           row[5] == data[i][5] && // 店舗
@@ -46,7 +46,7 @@ function OrderCHECK() {
     if (status == cancelStatus) {
       var existingIndex = result.findIndex(function(row) {
         return (
-          row[2] == data[i][2] && // 名前
+          row[2].replace(/\s/g, "") == data[i][2].replace(/\s/g, "") && // 名前（スペースを削除）
           row[3] == data[i][3] && // 受取日
           row[4] == data[i][4] && // 受取時間
           row[5] == data[i][5] && // 店舗
