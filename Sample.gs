@@ -19,6 +19,7 @@ function OrderCHECK() {
   
   // データを検査して結果に追加
   for (var i = 1; i < data.length; i++) {
+    var name = data[i][2].replace(/[\s\t\n]/g,""); // 名前の前後の空白を削除
     var status = data[i][7];
     var cancelStatus = "ｷｬﾝｾﾙ済み（予約可能枠）です";  // キャンセルステータス文言
 
@@ -26,7 +27,7 @@ function OrderCHECK() {
       // 2023/10/28：同じデータがある場合は個数を加算する処理追加
       var existingIndex = result.findIndex(function(row) {
         return (
-          row[2].replace(/\s/g, "") == data[i][2].replace(/\s/g, "") && // 名前（スペースを削除）
+          row[2].replace(/[\s\t\n]/g,"") == name && // 名前
           row[3] == data[i][3] && // 受取日
           row[4] == data[i][4] && // 受取時間
           row[5] == data[i][5] && // 店舗
@@ -35,7 +36,7 @@ function OrderCHECK() {
       });
 
       if (existingIndex !== -1) {
-        for (var k = 11; k < data[i].length; k++) {
+        for (var k = 10; k < data[i].length; k++) {
           result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
         }
       } else {
@@ -46,7 +47,7 @@ function OrderCHECK() {
     if (status == cancelStatus) {
       var existingIndex = result.findIndex(function(row) {
         return (
-          row[2].replace(/\s/g, "") == data[i][2].replace(/\s/g, "") && // 名前（スペースを削除）
+          row[2].replace(/[\s\t\n]/g,"") == name && // 名前
           row[3] == data[i][3] && // 受取日
           row[4] == data[i][4] && // 受取時間
           row[5] == data[i][5] && // 店舗
@@ -55,7 +56,7 @@ function OrderCHECK() {
       });
 
       if (existingIndex !== -1) {
-        for (var k = 11; k < data[i].length; k++) {
+        for (var k = 10; k < data[i].length; k++) {
           result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
         }
       } else {
@@ -71,6 +72,13 @@ function OrderCHECK() {
 
   // 結果を結果シートに貼り付け
   resultSheet.getRange(2, 1, result.length, result[0].length).setValues(result);
+
+  // 空白を削除（半角・全角）
+  resultSheet.getDataRange().createTextFinder(" ").replaceAllWith("");
+  resultSheet.getDataRange().createTextFinder("　").replaceAllWith(""); // 全角スペース
+
+  // 余分な改行を削除
+  resultSheet.getDataRange().createTextFinder("\n").replaceAllWith("");
 
   // 関数を追加する処理
   var lastRowWithData = resultSheet.getLastRow();
