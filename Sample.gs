@@ -17,34 +17,33 @@ function OrderCHECK() {
   // ヘッダー行を格納する配列
   var result = [];
   
-// データを検査して結果に追加
-for (var i = 1; i < data.length; i++) {
-  var name = data[i][2];
-  // Logger.log("元の名前: " + name); // 名前をログに出力
+  // データを検査して結果に追加
+  for (var i = 1; i < data.length; i++) {
+    var name = data[i][2];
+    name = name.replace(/[\s\t\n]/g, "");
+    
+    var status = data[i][7];
+    var cancelStatus = "ｷｬﾝｾﾙ済み（予約可能枠）です";  // キャンセルステータス文言
 
-  name = name.replace(/[\s\t\n]/g, "");
-  // Logger.log("空白を削除後の名前: " + name); // 空白を削除した名前をログに出力
-
-  var status = data[i][7];
-  var cancelStatus = "ｷｬﾝｾﾙ済み（予約可能枠）です";  // キャンセルステータス文言
-  // Logger.log("名前: " + name + ", 受取日: " + data[i][3] + ", 受取時間: " + data[i][4] + ", 店舗: " + data[i][5] + ", 電話番号: " + data[i][6]);
-
-
-  if (status == "受取待ちです") {
-    // 2023/10/28：同じデータがある場合は個数を加算する処理追加
-    var existingIndex = result.findIndex(function(row) {
-      return (
-        row[2].replace(/[\s\t\n]/g,"") == name && // 名前
-        row[3] == data[i][3] && // 受取日
-        row[4] == data[i][4] && // 受取時間
-        row[5] == data[i][5] && // 店舗
-        row[6] == data[i][6]    // 電話番号
-      );
-    });
+    if (status == "受取待ちです") {
+      // 2023/10/28：同じデータがある場合は個数を加算する処理追加
+      var existingIndex = result.findIndex(function(row) {
+        return (
+          row[2].replace(/[\s\t\n]/g,"") == name && // 名前
+          row[3] == data[i][3] && // 受取日
+          row[4] == data[i][4] && // 受取時間
+          row[5] == data[i][5] && // 店舗
+          row[6] == data[i][6]    // 電話番号
+        );
+      });
 
     if (existingIndex !== -1) {
       for (var k = 10; k < data[i].length; k++) {
-        result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
+        // 2023/11/17：「-」が入っていたら除外する処理に変更
+        var valueToAdd = data[i][k];
+        if (valueToAdd !== "-" && !isNaN(Number(valueToAdd))) {
+          result[existingIndex][k] = result[existingIndex][k] !== "-" ? Number(result[existingIndex][k]) + Number(valueToAdd) : Number(valueToAdd);
+        }
       }
     } else {
       result.push(data[i]);
@@ -64,7 +63,11 @@ for (var i = 1; i < data.length; i++) {
 
     if (existingIndex !== -1) {
       for (var k = 10; k < data[i].length; k++) {
-        result[existingIndex][k] = Number(result[existingIndex][k]) + Number(data[i][k]);
+        // 2023/11/17：「-」が入っていたら除外する処理に変更
+        var valueToAdd = data[i][k];
+        if (valueToAdd !== "-" && !isNaN(Number(valueToAdd))) {
+          result[existingIndex][k] = result[existingIndex][k] !== "-" ? Number(result[existingIndex][k]) + Number(valueToAdd) : Number(valueToAdd);
+        }
       }
     } else {
       result.push(data[i]);
